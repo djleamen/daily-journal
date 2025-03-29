@@ -84,12 +84,9 @@ public class JournalApp extends JFrame {
                 JOptionPane.showMessageDialog(JournalApp.this, "Please select an entry to view.");
                 return;
             }
-            String message = "Title: " + selectedEntry.getTitle() + "\n" +
-                             "Date: " + selectedEntry.getDate() + "\n" +
-                             "Location: " + selectedEntry.getLocation() + "\n" +
-                             "Tags: " + String.join(", ", selectedEntry.getTags()) + "\n\n" +
-                             "Content:\n" + selectedEntry.getContent();
-            JOptionPane.showMessageDialog(JournalApp.this, message, "View Entry", JOptionPane.INFORMATION_MESSAGE);
+            // Show the custom ViewEntryDialog instead of a big JOptionPane
+            ViewEntryDialog dialog = new ViewEntryDialog(JournalApp.this, selectedEntry);
+            dialog.setVisible(true);
         });
 
         // Button: Delete Selected Entry
