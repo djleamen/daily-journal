@@ -1,6 +1,8 @@
 /**
  * The JournalGraphPanel class is responsible for rendering a heatmap-style calendar
- * that visually represents the number of journal entries for each day of the year.
+ * inspired by GitHub's contribution graph. It visualizes journal entries as colored squares
+ * for each day of the year. A color gradient is used to indicate the intensity of entries,
+ * with lighter colors representing fewer entries and darker colors representing more entries.
  */
 
 import javax.swing.*;
@@ -10,8 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A panel that visualizes journal entries as a heatmap-style calendar.
- * Each cell represents a day, and the color intensity indicates the number of entries for that day.
+ * The {@code JournalGraphPanel} class creates a panel that visualizes journal entries 
+ * as a heatmap-style calendar. Each cell represents a day, and the color intensity 
+ * indicates the number of entries for that day.
  */
 public class JournalGraphPanel extends JPanel {
     private JournalManager journalManager;
@@ -20,9 +23,9 @@ public class JournalGraphPanel extends JPanel {
     private int cellPadding = 3;
 
     /**
-     * Constructs a JournalGraphPanel with the given JournalManager.
+     * Constructs a {@code JournalGraphPanel} with the given {@code JournalManager}.
      *
-     * @param manager the JournalManager that provides journal entries
+     * @param manager the {@code JournalManager} that provides journal entries
      */
     public JournalGraphPanel(JournalManager manager) {
         this.journalManager = manager;
@@ -31,6 +34,8 @@ public class JournalGraphPanel extends JPanel {
 
     /**
      * Computes the number of journal entries for each date and stores the results in a map.
+     * This method iterates through all journal entries provided by the {@code JournalManager}
+     * and counts the occurrences for each date.
      */
     private void computeEntryCounts() {
         dateEntryCount = new HashMap<>();
@@ -41,9 +46,10 @@ public class JournalGraphPanel extends JPanel {
     }
 
     /**
-     * Paints the heatmap-style calendar on the panel.
+     * Paints the heatmap-style calendar on the panel. Each cell represents a day of the year,
+     * and its color intensity corresponds to the number of journal entries for that day.
      *
-     * @param g the Graphics object used for painting
+     * @param g the {@code Graphics} object used for painting
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -77,9 +83,10 @@ public class JournalGraphPanel extends JPanel {
 
     /**
      * Determines the color to use for a cell based on the number of journal entries for that day.
+     * The color intensity increases with the number of entries.
      *
      * @param count the number of journal entries for the day
-     * @return the color corresponding to the entry count
+     * @return the {@code Color} corresponding to the entry count
      */
     private Color getColorForCount(int count) {
         if (count == 0) {

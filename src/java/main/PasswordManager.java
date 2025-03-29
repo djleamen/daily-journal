@@ -8,15 +8,16 @@ import org.json.JSONObject;
 import java.security.MessageDigest;
 
 /**
- * A utility class for managing password storage and verification.
- * Passwords are hashed using SHA-256 and stored in a JSON file.
+ * The {@code PasswordManager} class is a utility class for managing 
+ * password storage and verification. Passwords are hashed using SHA-256 
+ * and stored in a JSON file.
  */
 public class PasswordManager {
     private String filePath;
     private String storedHash;
 
     /**
-     * Constructs a PasswordManager with the specified file path.
+     * Constructs a {@code PasswordManager} with the specified file path.
      * The file is used to store the hashed password.
      *
      * @param filePath the path to the file where the password hash is stored
@@ -28,7 +29,7 @@ public class PasswordManager {
 
     /**
      * Loads the stored password hash from the file.
-     * If the file does not exist, the stored hash is set to null.
+     * If the file does not exist, the stored hash is set to {@code null}.
      */
     private void loadPassword() {
         File file = new File(filePath);
@@ -52,7 +53,7 @@ public class PasswordManager {
     /**
      * Checks if a password has been set.
      *
-     * @return true if a password is set, false otherwise
+     * @return {@code true} if a password is set, {@code false} otherwise
      */
     public boolean isPasswordSet() {
         return storedHash != null;
@@ -62,7 +63,7 @@ public class PasswordManager {
      * Verifies if the provided password matches the stored password hash.
      *
      * @param password the password to verify
-     * @return true if the password matches, false otherwise
+     * @return {@code true} if the password matches, {@code false} otherwise
      */
     public boolean verifyPassword(String password) {
         return hashPassword(password).equals(storedHash);

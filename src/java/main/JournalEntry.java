@@ -11,7 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Represents a journal entry with a title, date, location, tags, and content.
+ * The {@code JournalEntry} class represents a single entry in the journal.
+ * It includes details such as the title, date, location, tags, and content
+ * of the journal entry, and provides methods for JSON serialization and deserialization.
  */
 public class JournalEntry {
     private String title;
@@ -21,13 +23,13 @@ public class JournalEntry {
     private String content;
 
     /**
-     * Constructs a new JournalEntry.
+     * Constructs a new {@code JournalEntry}.
      *
-     * @param title    The title of the journal entry.
-     * @param date     The date of the journal entry.
-     * @param location The location associated with the journal entry.
-     * @param tags     A list of tags for the journal entry.
-     * @param content  The content of the journal entry.
+     * @param title    the title of the journal entry
+     * @param date     the date of the journal entry
+     * @param location the location associated with the journal entry
+     * @param tags     a list of tags for the journal entry
+     * @param content  the content of the journal entry
      */
     public JournalEntry(String title, LocalDate date, String location, List<String> tags, String content) {
         this.title = title;
@@ -40,42 +42,42 @@ public class JournalEntry {
     /**
      * Gets the title of the journal entry.
      *
-     * @return The title of the journal entry.
+     * @return the title of the journal entry
      */
     public String getTitle() { return title; }
 
     /**
      * Gets the date of the journal entry.
      *
-     * @return The date of the journal entry.
+     * @return the date of the journal entry
      */
     public LocalDate getDate() { return date; }
 
     /**
      * Gets the location associated with the journal entry.
      *
-     * @return The location of the journal entry.
+     * @return the location of the journal entry
      */
     public String getLocation() { return location; }
 
     /**
      * Gets the tags associated with the journal entry.
      *
-     * @return A list of tags for the journal entry.
+     * @return a list of tags for the journal entry
      */
     public List<String> getTags() { return tags; }
 
     /**
      * Gets the content of the journal entry.
      *
-     * @return The content of the journal entry.
+     * @return the content of the journal entry
      */
     public String getContent() { return content; }
 
     /**
      * Converts the journal entry to a JSON object.
      *
-     * @return A JSONObject representing the journal entry.
+     * @return a {@code JSONObject} representing the journal entry
      */
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
@@ -88,10 +90,10 @@ public class JournalEntry {
     }
 
     /**
-     * Creates a JournalEntry object from a JSON object.
+     * Creates a {@code JournalEntry} object from a JSON object.
      *
-     * @param json The JSONObject representing a journal entry.
-     * @return A JournalEntry object created from the JSON data.
+     * @param json the {@code JSONObject} representing a journal entry
+     * @return a {@code JournalEntry} object created from the JSON data
      */
     public static JournalEntry fromJson(JSONObject json) {
         String title = json.getString("title");

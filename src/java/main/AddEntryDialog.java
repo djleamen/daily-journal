@@ -10,6 +10,12 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
 
+
+/**
+ * The {@code AddEntryDialog} class provides a dialog for adding new journal entries.
+ * It includes fields for title, date, location, tags, and content.
+ * Users can add new tags, select from existing global tags, and save their entries.
+ */
 public class AddEntryDialog extends JDialog {
     private boolean succeeded;
     private JTextField titleField;
@@ -22,10 +28,10 @@ public class AddEntryDialog extends JDialog {
     private TagsManager tagsManager;
     
     /**
-     * Constructor for the AddEntryDialog class.
+     * Constructs a new {@code AddEntryDialog}.
      *
-     * @param parent      The parent frame of the dialog.
-     * @param tagsManager The TagsManager instance for managing global tags.
+     * @param parent      the parent frame of the dialog
+     * @param tagsManager the {@code TagsManager} instance for managing global tags
      */
     public AddEntryDialog(Frame parent, TagsManager tagsManager) {
         super(parent, "Add New Journal Entry", true);
@@ -155,7 +161,7 @@ public class AddEntryDialog extends JDialog {
     /**
      * Checks if the dialog operation was successful.
      *
-     * @return true if the entry was successfully saved, false otherwise.
+     * @return {@code true} if the entry was successfully saved, {@code false} otherwise
      */
     public boolean isSucceeded() {
         return succeeded;
@@ -164,7 +170,7 @@ public class AddEntryDialog extends JDialog {
     /**
      * Retrieves the journal entry created in the dialog.
      *
-     * @return The JournalEntry object containing the entered data.
+     * @return the {@code JournalEntry} object containing the entered data
      */
     public JournalEntry getJournalEntry() {
         return journalEntry;

@@ -1,7 +1,7 @@
 /**
- * The EditEntryDialog class represents a dialog for editing a journal entry.
- * It allows the user to modify the title, date, location, tags, and content of the entry.
- * The dialog includes a list of existing tags and provides functionality to add new tags.
+ * Represents a dialog for editing a journal entry.
+ * This dialog allows the user to modify the title, date, location, tags, and content of the entry.
+ * It includes a list of existing tags and provides functionality to add new tags.
  */
 
 import javax.swing.*;
@@ -10,6 +10,11 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
 
+/**
+ * The {@code EditEntryDialog} class provides a graphical user interface for editing a journal entry.
+ * Users can update the title, date, location, tags, and content of the entry.
+ * The dialog also integrates with a global tags manager to allow adding new tags.
+ */
 public class EditEntryDialog extends JDialog {
     private boolean succeeded;
     private JTextField titleField;
@@ -22,7 +27,7 @@ public class EditEntryDialog extends JDialog {
     private TagsManager tagsManager;
 
     /**
-     * Constructs an {@code EditEntryDialog} with the specified parent frame, journal entry, and tags manager.
+     * Constructs an {@code EditEntryDialog} instance.
      *
      * @param parent      the parent frame of the dialog
      * @param entry       the journal entry to be edited
@@ -159,7 +164,7 @@ public class EditEntryDialog extends JDialog {
     }
 
     /**
-     * Returns whether the dialog operation was successful.
+     * Checks if the dialog operation was successful.
      *
      * @return {@code true} if the dialog operation succeeded; {@code false} otherwise
      */
@@ -168,9 +173,9 @@ public class EditEntryDialog extends JDialog {
     }
 
     /**
-     * Returns the updated journal entry after the dialog operation.
+     * Retrieves the updated journal entry after the dialog operation.
      *
-     * @return the updated {@code JournalEntry}
+     * @return the updated {@code JournalEntry} object
      */
     public JournalEntry getJournalEntry() {
         return journalEntry;

@@ -1,8 +1,8 @@
 /**
- * The TagFilterDialog class provides a user interface for filtering items
- * based on tags. It displays a combo box populated with available tags
- * retrieved from the TagsManager and allows the user to confirm or cancel
- * their selection.
+ * The TagFilterDialog class provides a dialog for filtering 
+ * items by tags. It displays a combo box populated with available tags 
+ * retrieved from the {@code TagsManager} and allows the user to confirm 
+ * or cancel their selection.
  */
 
 import javax.swing.*;
@@ -10,8 +10,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * A dialog for filtering items by tags. Provides a combo box to select a tag
- * and buttons to confirm or cancel the selection.
+ * The {@code TagFilterDialog} class provides a dialog for filtering 
+ * items by tags. It displays a combo box populated with available tags 
+ * retrieved from the {@code TagsManager} and allows the user to confirm 
+ * or cancel their selection.
  */
 public class TagFilterDialog extends JDialog {
     private boolean succeeded;
@@ -20,10 +22,10 @@ public class TagFilterDialog extends JDialog {
     private TagsManager tagsManager;
 
     /**
-     * Constructs a TagFilterDialog.
+     * Constructs a {@code TagFilterDialog}.
      *
-     * @param parent      The parent frame of the dialog.
-     * @param tagsManager The TagsManager instance to retrieve available tags.
+     * @param parent      the parent frame of the dialog
+     * @param tagsManager the {@code TagsManager} instance to retrieve available tags
      */
     public TagFilterDialog(Frame parent, TagsManager tagsManager) {
         super(parent, "Filter by Tag", true);
@@ -70,7 +72,7 @@ public class TagFilterDialog extends JDialog {
     /**
      * Checks if the dialog was closed with a successful selection.
      *
-     * @return true if the user clicked "OK", false otherwise.
+     * @return {@code true} if the user clicked "OK", {@code false} otherwise
      */
     public boolean isSucceeded() {
         return succeeded;
@@ -79,7 +81,7 @@ public class TagFilterDialog extends JDialog {
     /**
      * Gets the tag selected by the user.
      *
-     * @return The selected tag, or null if no tag was selected.
+     * @return the selected tag, or {@code null} if no tag was selected
      */
     public String getSelectedTag() {
         return selectedTag;

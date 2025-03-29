@@ -1,7 +1,7 @@
 /**
  * The PasswordDialog class provides a graphical user interface (GUI) dialog
- * for either entering an existing password or setting a new password with confirmation.
- * It supports two modes: new password mode and existing password mode.
+ * for entering or setting a password. It can be used in two modes: to enter an
+ * existing password or to set a new password.
  */
 
 import javax.swing.*;
@@ -9,21 +9,29 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * A dialog for entering or setting a password. Supports two modes:
- * entering an existing password or setting a new password with confirmation.
+ * The {@code PasswordDialog} class provides a graphical user interface (GUI) dialog
+ * for entering or setting a password. It can be used in two modes: to enter an
+ * existing password or to set a new password.
+ * 
+ * <p>This class extends {@link JDialog} and provides a simple interface for users to
+ * input their password. It includes validation to ensure that the new password
+ * and confirmation match when setting a new password. The dialog can be
+ * displayed modally, meaning it will block input to other windows until it is
+ * closed.</p>
  */
 public class PasswordDialog extends JDialog {
     private boolean succeeded;
     private JPasswordField passwordField;
-    private JPasswordField confirmPasswordField; // used in new password mode
+    private JPasswordField confirmPasswordField;
     private boolean newPasswordMode;
     private String password;
 
     /**
-     * Constructs a PasswordDialog.
+     * Constructs a {@code PasswordDialog} instance.
      *
      * @param parent          the parent frame of the dialog
-     * @param newPasswordMode true if the dialog is for setting a new password, false for entering an existing password
+     * @param newPasswordMode {@code true} if the dialog is for setting a new password,
+     *                        {@code false} if it is for entering an existing password
      */
     public PasswordDialog(Frame parent, boolean newPasswordMode) {
         super(parent, newPasswordMode ? "Set New Password" : "Enter Password", true);
@@ -33,11 +41,14 @@ public class PasswordDialog extends JDialog {
         setLocationRelativeTo(parent);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.setBorder(new EmptyBorder(10,10,10,10));
         getContentPane().add(panel);
 
+        // Create OK button first so we can reference it.
+        final JButton okButton = new JButton("OK");
+
         JPanel inputPanel;
-        if (newPasswordMode) {
+        if(newPasswordMode) {
             inputPanel = new JPanel(new GridLayout(2, 2, 5, 5));
             inputPanel.add(new JLabel("Password:"));
             passwordField = new JPasswordField();
@@ -45,21 +56,25 @@ public class PasswordDialog extends JDialog {
             inputPanel.add(new JLabel("Confirm:"));
             confirmPasswordField = new JPasswordField();
             inputPanel.add(confirmPasswordField);
+            // Pressing Enter in either field triggers the OK button.
+            passwordField.addActionListener(e -> okButton.doClick());
+            confirmPasswordField.addActionListener(e -> okButton.doClick());
         } else {
             inputPanel = new JPanel(new GridLayout(1, 2, 5, 5));
             inputPanel.add(new JLabel("Password:"));
             passwordField = new JPasswordField();
             inputPanel.add(passwordField);
+            // Pressing Enter in the field triggers the OK button.
+            passwordField.addActionListener(e -> okButton.doClick());
         }
         panel.add(inputPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton okButton = new JButton("OK");
         okButton.addActionListener(e -> {
             String pass = new String(passwordField.getPassword());
-            if (newPasswordMode) {
+            if(newPasswordMode) {
                 String confirm = new String(confirmPasswordField.getPassword());
-                if (!pass.equals(confirm)) {
+                if(!pass.equals(confirm)) {
                     JOptionPane.showMessageDialog(PasswordDialog.this, "Passwords do not match.");
                     return;
                 }
@@ -79,18 +94,18 @@ public class PasswordDialog extends JDialog {
     }
 
     /**
-     * Returns whether the user successfully entered or set a password.
+     * Returns whether the operation succeeded.
      *
-     * @return true if the user clicked OK and entered a valid password, false otherwise
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
      */
     public boolean isSucceeded() {
         return succeeded;
     }
 
     /**
-     * Returns the password entered or set by the user.
+     * Returns the entered or set password.
      *
-     * @return the password as a String
+     * @return the password as a {@code String}
      */
     public String getPassword() {
         return password;

@@ -1,8 +1,7 @@
 /**
  * The LocationFilterDialog class is responsible for displaying a dialog
- * that allows users to filter journal entries by location. It provides
- * a dropdown menu populated with unique locations extracted from the
- * provided journal entries.
+ * that allows users to filter journal entries by location. It provides a dropdown
+ * menu populated with unique locations extracted from the provided journal entries.
  */
 
 import javax.swing.*;
@@ -13,8 +12,9 @@ import java.util.TreeSet;
 import java.util.List;
 
 /**
- * A dialog for filtering journal entries by location.
- * Displays a dropdown of unique locations extracted from the provided journal entries.
+ * The {@code LocationFilterDialog} class creates a dialog for filtering journal entries 
+ * by location. It displays a dropdown of unique locations extracted from the provided 
+ * journal entries.
  */
 public class LocationFilterDialog extends JDialog {
     private boolean succeeded;
@@ -22,10 +22,10 @@ public class LocationFilterDialog extends JDialog {
     private String selectedLocation;
 
     /**
-     * Constructs a LocationFilterDialog.
+     * Constructs a {@code LocationFilterDialog}.
      *
-     * @param parent  The parent frame of the dialog.
-     * @param entries The list of journal entries to extract locations from.
+     * @param parent  the parent frame of the dialog
+     * @param entries the list of journal entries to extract locations from
      */
     public LocationFilterDialog(Frame parent, List<JournalEntry> entries) {
         super(parent, "Filter by Location", true);
@@ -35,9 +35,9 @@ public class LocationFilterDialog extends JDialog {
 
         JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         locationComboBox = new JComboBox<>();
-        locationComboBox.addItem("All");  // "All" means no filtering
+        locationComboBox.addItem("All");  // "All" indicates no filtering
 
-        // Use a set to gather unique, non-empty locations.
+        // Use a set to gather unique, non-empty locations from journal entries.
         Set<String> locations = new TreeSet<>();
         for (JournalEntry entry : entries) {
             String loc = entry.getLocation();
@@ -73,7 +73,7 @@ public class LocationFilterDialog extends JDialog {
     /**
      * Returns whether the dialog was closed successfully (OK button clicked).
      *
-     * @return true if the dialog was closed successfully, false otherwise.
+     * @return {@code true} if the dialog was closed successfully, {@code false} otherwise
      */
     public boolean isSucceeded() {
         return succeeded;
@@ -82,7 +82,7 @@ public class LocationFilterDialog extends JDialog {
     /**
      * Returns the location selected by the user.
      *
-     * @return The selected location, or null if no location was selected.
+     * @return the selected location, or {@code null} if no location was selected
      */
     public String getSelectedLocation() {
         return selectedLocation;

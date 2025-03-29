@@ -1,7 +1,7 @@
 /**
- * The FilterDialog class implements a dialog for filtering journal entries based on tags or locations.
- * It allows the user to select a category (Tag or Location) and a specific value to filter by.
- * The dialog includes a combo box for selecting the category and another for selecting the value.
+ * The {@code FilterDialog} class provides a dialog for filtering journal entries 
+ * based on categories such as "Tag" or "Location". Users can select a category 
+ * and a corresponding value to apply the filter.
  */
 
 import javax.swing.*;
@@ -11,8 +11,9 @@ import java.util.*;
 import java.util.List;
 
 /**
- * A dialog for filtering journal entries by category (Tag or Location) and value.
- * Users can select a filter category and a corresponding value to apply the filter.
+ * The {@code FilterDialog} class provides a dialog for filtering journal entries 
+ * based on categories such as "Tag" or "Location". Users can select a category 
+ * and a corresponding value to apply the filter.
  */
 public class FilterDialog extends JDialog {
     private boolean succeeded;
@@ -22,7 +23,8 @@ public class FilterDialog extends JDialog {
     private String selectedValue;
 
     /**
-     * Constructs a dialog for filtering journal entries by category and value.
+     * Constructs a {@code FilterDialog} instance for filtering journal entries 
+     * by category and value.
      *
      * @param parent      the parent frame that owns this dialog
      * @param tagsManager the manager providing the list of global tags for filtering by "Tag"
@@ -75,8 +77,10 @@ public class FilterDialog extends JDialog {
 
     /**
      * Updates the value combo box based on the selected filter category.
-     * If "Tag" is selected, it populates the combo box with available tags.
-     * If "Location" is selected, it populates the combo box with distinct, non-empty locations.
+     * <p>
+     * If "Tag" is selected, the combo box is populated with available tags.
+     * If "Location" is selected, the combo box is populated with distinct, non-empty locations.
+     * </p>
      *
      * @param tagsManager the manager providing the list of global tags
      * @param entries     the list of journal entries used to derive distinct locations
@@ -107,7 +111,7 @@ public class FilterDialog extends JDialog {
     /**
      * Returns whether the dialog was successfully completed.
      *
-     * @return true if the user clicked "OK", false otherwise
+     * @return {@code true} if the user clicked "OK", {@code false} otherwise
      */
     public boolean isSucceeded() {
         return succeeded;
@@ -116,7 +120,7 @@ public class FilterDialog extends JDialog {
     /**
      * Returns the selected filter category.
      *
-     * @return the selected category ("Tag" or "Location")
+     * @return the selected category, either "Tag" or "Location"
      */
     public String getSelectedCategory() {
         return selectedCategory;

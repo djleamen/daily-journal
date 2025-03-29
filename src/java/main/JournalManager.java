@@ -10,14 +10,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Manages a collection of journal entries, allowing for adding, loading, and saving entries.
+ * The {@code JournalManager} class manages a collection of journal entries, allowing for 
+ * adding, loading, and saving entries. Entries are stored in a JSON format within a 
+ * specified file. 
  */
 public class JournalManager {
     private List<JournalEntry> entries;
     private String filePath;
 
     /**
-     * Constructs a JournalManager with the specified file path.
+     * Constructs a {@code JournalManager} with the specified file path.
      *
      * @param filePath the path to the file where journal entries are stored
      */
@@ -29,7 +31,7 @@ public class JournalManager {
     /**
      * Retrieves the list of journal entries.
      *
-     * @return a list of journal entries
+     * @return a {@code List} of {@code JournalEntry} objects
      */
     public List<JournalEntry> getEntries() {
         return entries;
@@ -38,7 +40,7 @@ public class JournalManager {
     /**
      * Adds a new journal entry to the collection.
      *
-     * @param entry the journal entry to add
+     * @param entry the {@code JournalEntry} to add
      */
     public void addEntry(JournalEntry entry) {
         entries.add(entry);

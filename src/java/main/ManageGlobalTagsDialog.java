@@ -11,8 +11,9 @@ import java.awt.event.*;
 import java.util.List;
 
 /**
- * A dialog for managing global tags in the journal application.
- * Allows users to view, delete, and manage tags that are applied globally.
+ * The {@code ManageGlobalTagsDialog} class provides a dialog for managing global 
+ * tags in the journal application. It allows users to view, delete, and 
+ * manage tags that are applied globally across all journal entries.
  */
 public class ManageGlobalTagsDialog extends JDialog {
     private TagsManager tagsManager;
@@ -21,11 +22,11 @@ public class ManageGlobalTagsDialog extends JDialog {
     private JList<String> tagsList;
 
     /**
-     * Constructs a new ManageGlobalTagsDialog.
+     * Constructs a new {@code ManageGlobalTagsDialog}.
      *
-     * @param parent         The parent frame of this dialog.
-     * @param tagsManager    The TagsManager instance for managing global tags.
-     * @param journalManager The JournalManager instance for managing journal entries.
+     * @param parent         the parent frame of this dialog
+     * @param tagsManager    the {@code TagsManager} instance for managing global tags
+     * @param journalManager the {@code JournalManager} instance for managing journal entries
      */
     public ManageGlobalTagsDialog(Frame parent, TagsManager tagsManager, JournalManager journalManager) {
         super(parent, "Manage Global Tags", true);
@@ -58,8 +59,10 @@ public class ManageGlobalTagsDialog extends JDialog {
 
     /**
      * Handles the deletion of a selected tag.
+     * <p>
      * Prompts the user for confirmation, removes the tag from global tags,
      * removes it from all journal entries, and updates the UI.
+     * </p>
      */
     private void handleDeleteTag() {
         String selectedTag = tagsList.getSelectedValue();

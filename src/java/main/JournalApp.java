@@ -1,6 +1,7 @@
 /**
- * The JournalApp.java class serves as the main entry point for the Daily Journal application.
- * It initializes the graphical user interface (GUI) and manages user interactions with journal entries.
+ * The JournalApp class serves as the main entry point for the Daily Journal application.
+ * It initializes the graphical user interface (GUI) and manages user interactions with 
+ * journal entries.
  */
 
 import javax.swing.*;
@@ -11,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The main application class for the Daily Journal application.
- * This class initializes the GUI and manages interactions between the user and the journal data.
+ * The {@code JournalApp} class is the main application class for the Daily Journal 
+ * application. This class initializes the GUI and manages interactions between 
+ * the user and the journal data.
  */
 public class JournalApp extends JFrame {
     private JournalManager journalManager;
@@ -25,7 +27,8 @@ public class JournalApp extends JFrame {
     private String currentLocationFilter = null;
 
     /**
-     * Constructs the JournalApp and initializes the GUI components.
+     * Constructs the {@code JournalApp} and initializes the GUI components.
+     * This includes setting up the main panel, recent entries list, and buttons.
      */
     public JournalApp() {
         journalManager = new JournalManager("journal_entries.json");
@@ -167,7 +170,6 @@ public class JournalApp extends JFrame {
             }
         });
 
-        // NEW: Button to manage global tags.
         JButton manageTagsButton = new JButton("Manage Global Tags");
         manageTagsButton.addActionListener(e -> {
             ManageGlobalTagsDialog dialog = new ManageGlobalTagsDialog(JournalApp.this, tagsManager, journalManager);
@@ -186,9 +188,8 @@ public class JournalApp extends JFrame {
     }
 
     /**
-     * Updates the entries list according to the current filter.
-     * If currentTagFilter is null, show all. Otherwise, show only entries
-     * whose tags contain currentTagFilter.
+     * Updates the list of recent journal entries displayed in the GUI.
+     * Filters entries based on the current tag and location filters.
      */
     private void updateRecentEntries() {
         recentEntriesModel.clear();
@@ -215,9 +216,8 @@ public class JournalApp extends JFrame {
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Initialize the PasswordManager with the password file.
             PasswordManager pm = new PasswordManager("password.json");
-
+            
             // If no password is set, prompt the user to create one.
             if (!pm.isPasswordSet()) {
                 PasswordDialog setDialog = new PasswordDialog(null, true);
@@ -228,17 +228,33 @@ public class JournalApp extends JFrame {
                     System.exit(0);
                 }
             }
-
-            // Now prompt for password entry.
-            PasswordDialog loginDialog = new PasswordDialog(null, false);
-            loginDialog.setVisible(true);
-            if (loginDialog.isSucceeded() && pm.verifyPassword(loginDialog.getPassword())) {
-                JournalApp app = new JournalApp();
-                app.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect password. Exiting.");
+            
+            // Now allow up to 3 attempts for password entry.
+            int attempts = 0;
+            boolean authenticated = false;
+            while (attempts < 3 && !authenticated) {
+                PasswordDialog loginDialog = new PasswordDialog(null, false);
+                loginDialog.setVisible(true);
+                if (loginDialog.isSucceeded() && pm.verifyPassword(loginDialog.getPassword())) {
+                    authenticated = true;
+                    break;
+                } else {
+                    attempts++;
+                    if (attempts < 3) {
+                        JOptionPane.showMessageDialog(null, 
+                            "Incorrect password. Attempts remaining: " + (3 - attempts));
+                    }
+                }
+            }
+            
+            if (!authenticated) {
+                JOptionPane.showMessageDialog(null, "Too many incorrect attempts. Exiting.");
                 System.exit(0);
             }
+            
+            // Launch the main application.
+            JournalApp app = new JournalApp();
+            app.setVisible(true);
         });
     }
 }
