@@ -1,0 +1,6 @@
+# Database files
+journal_entries.json
+tags.json
+password.json
+
+/bin
