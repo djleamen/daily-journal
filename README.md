@@ -1,4 +1,12 @@
 # Daily Journal
+
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Java](https://img.shields.io/badge/Java-8%2B-red?logo=java)
+![UI Toolkit](https://img.shields.io/badge/Java%20Swing-UI-lightgrey)
+![Storage](https://img.shields.io/badge/Storage-JSON-blue)
+![Security](https://img.shields.io/badge/Security-Password%20Protected-critical)
+![Last Commit](https://img.shields.io/github/last-commit/djleamen/daily-journal)
+
 Daily Journal is a Java Swing application that allows users to create and manage daily journal entries. The application provides a user-friendly interface for writing, editing, and deleting journal entries. Users can also view their entries in a list format, making it easy to navigate through past entries.
 
 ## Features
