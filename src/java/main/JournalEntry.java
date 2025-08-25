@@ -1,14 +1,6 @@
-/**
- * The JournalEntry class represents a single entry in the journal.
- * It includes details such as the title, date, location, tags, and content
- * of the journal entry, and provides methods for JSON serialization and deserialization.
- */
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * The {@code JournalEntry} class represents a single entry in the journal.
@@ -16,11 +8,11 @@ import org.json.JSONObject;
  * of the journal entry, and provides methods for JSON serialization and deserialization.
  */
 public class JournalEntry {
-    private String title;
-    private LocalDate date;
-    private String location;
-    private List<String> tags;
-    private String content;
+    private final String title;
+    private final LocalDate date;
+    private final String location;
+    private final List<String> tags;
+    private final String content;
 
     /**
      * Constructs a new {@code JournalEntry}.
@@ -30,12 +22,16 @@ public class JournalEntry {
      * @param location the location associated with the journal entry
      * @param tags     a list of tags for the journal entry
      * @param content  the content of the journal entry
+     * @throws IllegalArgumentException if date is null
      */
     public JournalEntry(String title, LocalDate date, String location, List<String> tags, String content) {
+        if (date == null) {
+            throw new IllegalArgumentException("Date cannot be null");
+        }
         this.title = title;
         this.date = date;
         this.location = location;
-        this.tags = tags;
+        this.tags = tags != null ? new ArrayList<>(tags) : new ArrayList<>();
         this.content = content;
     }
 
@@ -81,11 +77,11 @@ public class JournalEntry {
      */
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("title", title);
-        json.put("date", date.toString());
-        json.put("location", location);
-        json.put("tags", tags);
-        json.put("content", content);
+        json.put("title", title != null ? title : "");
+        json.put("date", date != null ? date.toString() : "");
+        json.put("location", location != null ? location : "");
+        json.put("tags", tags != null ? tags : new ArrayList<>());
+        json.put("content", content != null ? content : "");
         return json;
     }
 
@@ -94,15 +90,29 @@ public class JournalEntry {
      *
      * @param json the {@code JSONObject} representing a journal entry
      * @return a {@code JournalEntry} object created from the JSON data
+     * @throws IllegalArgumentException if json is null or missing required fields
      */
     public static JournalEntry fromJson(JSONObject json) {
+        if (json == null) {
+            throw new IllegalArgumentException("JSON object cannot be null");
+        }
+        
         String title = json.getString("title");
-        LocalDate date = LocalDate.parse(json.getString("date"));
+        String dateString = json.getString("date");
+        if (dateString == null) {
+            throw new IllegalArgumentException("Date field is required");
+        }
+        LocalDate date = LocalDate.parse(dateString);
         String location = json.getString("location");
         List<String> tags = new ArrayList<>();
         JSONArray tagsArray = json.getJSONArray("tags");
-        for (int i = 0; i < tagsArray.length(); i++) {
-            tags.add(tagsArray.getString(i));
+        if (tagsArray != null) {
+            for (int i = 0; i < tagsArray.length(); i++) {
+                String tag = tagsArray.getString(i);
+                if (tag != null) {
+                    tags.add(tag);
+                }
+            }
         }
         String content = json.getString("content");
         return new JournalEntry(title, date, location, tags, content);

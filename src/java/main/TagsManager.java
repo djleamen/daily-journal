@@ -1,28 +1,22 @@
-/**
- * The TagsManager class is responsible for managing a list of tags.
- * It provides functionality to add, load, and save tags to a file.
- * Tags are stored in a JSON array format within the specified file.
- * <p>
- * This class is part of a larger application that manages journal entries
- * and allows users to tag their entries for better organization and retrieval.
- */
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * The {@code TagsManager} class is responsible for managing a list of tags.
+ * The {@code TagsManager class is responsible for managing a list of tags.
  * It provides functionality to add, load, and save tags to a file.
  * Tags are stored in a JSON array format within the specified file.
  * <p>
  * This class is part of a larger application that manages journal entries
  * and allows users to tag their entries for better organization and retrieval.
  */
+
 public class TagsManager {
-    private List<String> tags;
-    private String filePath;
+    private static final Logger logger = Logger.getLogger(TagsManager.class.getName());
+    private final List<String> tags;
+    private final String filePath;
 
     /**
      * Constructs a {@code TagsManager} with the specified file path.
@@ -31,7 +25,7 @@ public class TagsManager {
      */
     public TagsManager(String filePath) {
         this.filePath = filePath;
-        tags = new ArrayList<>();
+        this.tags = new ArrayList<>();
     }
 
     /**
@@ -75,21 +69,21 @@ public class TagsManager {
                 tags.add(jsonArr.getString(i));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage());
         }
     }
 
     /**
      * Saves the current list of tags to the file in JSON array format.
      * <p>
-     * If an error occurs during the save operation, the exception is printed to the console.
+     * If an error occurs during the save operation, the exception is logged.
      */
     public void saveTags() {
         JSONArray jsonArr = new JSONArray(tags);
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.write(jsonArr.toString(4));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, () -> "Error saving tags to file: " + filePath + " - " + e.getMessage());
         }
     }
 }

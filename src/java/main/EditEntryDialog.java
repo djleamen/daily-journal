@@ -1,14 +1,8 @@
-/**
- * Represents a dialog for editing a journal entry.
- * This dialog allows the user to modify the title, date, location, tags, and content of the entry.
- * It includes a list of existing tags and provides functionality to add new tags.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  * The {@code EditEntryDialog} class provides a graphical user interface for editing a journal entry.
@@ -23,8 +17,7 @@ public class EditEntryDialog extends JDialog {
     private JTextField tagField;
     private DefaultListModel<String> entryTagsModel;
     private JTextArea contentArea;
-    private JournalEntry journalEntry;
-    private TagsManager tagsManager;
+    private transient JournalEntry journalEntry;
 
     /**
      * Constructs an {@code EditEntryDialog} instance.
@@ -35,7 +28,6 @@ public class EditEntryDialog extends JDialog {
      */
     public EditEntryDialog(Frame parent, JournalEntry entry, TagsManager tagsManager) {
         super(parent, "Edit Journal Entry", true);
-        this.tagsManager = tagsManager;
         setSize(400, 800);
         setLocationRelativeTo(parent);
         JPanel panel = new JPanel(new BorderLayout());

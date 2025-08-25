@@ -1,22 +1,16 @@
-/**
- * The JournalManager class is responsible for managing a collection of journal entries.
- * It provides functionality to add, load, and save entries to a specified file path.
- */
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.util.logging.Logger;
 /**
  * The {@code JournalManager} class manages a collection of journal entries, allowing for 
  * adding, loading, and saving entries. Entries are stored in a JSON format within a 
  * specified file. 
  */
 public class JournalManager {
-    private List<JournalEntry> entries;
-    private String filePath;
+    private static final Logger logger = Logger.getLogger(JournalManager.class.getName());
+    private final List<JournalEntry> entries;
+    private final String filePath;
 
     /**
      * Constructs a {@code JournalManager} with the specified file path.
@@ -70,7 +64,7 @@ public class JournalManager {
                 entries.add(entry);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(String.format("Error loading journal entries from file: %s - %s", filePath, e.getMessage()));
         }
     }
 
@@ -86,7 +80,7 @@ public class JournalManager {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.write(jsonArr.toString(4));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(String.format("Error saving journal entries to file: %s - %s", filePath, e.getMessage()));
         }
     }
 }

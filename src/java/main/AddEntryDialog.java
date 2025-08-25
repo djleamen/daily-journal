@@ -1,15 +1,8 @@
-/**
- * The AddEntryDialog class provides a dialog for adding new journal entries.
- * It includes fields for title, date, location, tags, and content.
- * Users can add new tags, select from existing global tags, and save their entries.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.Collections;
-
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  * The {@code AddEntryDialog} class provides a dialog for adding new journal entries.
@@ -24,8 +17,7 @@ public class AddEntryDialog extends JDialog {
     private JTextField tagField;
     private DefaultListModel<String> entryTagsModel;
     private JTextArea contentArea;
-    private JournalEntry journalEntry;
-    private TagsManager tagsManager;
+    private transient JournalEntry journalEntry;
     
     /**
      * Constructs a new {@code AddEntryDialog}.
@@ -35,7 +27,6 @@ public class AddEntryDialog extends JDialog {
      */
     public AddEntryDialog(Frame parent, TagsManager tagsManager) {
         super(parent, "Add New Journal Entry", true);
-        this.tagsManager = tagsManager;
         setSize(400, 800);
         setLocationRelativeTo(parent);
         JPanel panel = new JPanel(new BorderLayout());

@@ -1,11 +1,8 @@
-/**
- * The PasswordManager class is responsible for securely managing passwords.
- * It provides functionality to hash passwords, store them in a file, and verify them.
- */
-
 import java.io.*;
-import org.json.JSONObject;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 /**
  * The {@code PasswordManager} class is a utility class for managing 
@@ -13,7 +10,8 @@ import java.security.MessageDigest;
  * and stored in a JSON file.
  */
 public class PasswordManager {
-    private String filePath;
+    private static final Logger logger = Logger.getLogger(PasswordManager.class.getName());
+    private final String filePath;
     private String storedHash;
 
     /**
@@ -46,7 +44,7 @@ public class PasswordManager {
             JSONObject json = new JSONObject(jsonStr.toString());
             storedHash = json.getString("passwordHash");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(String.format("Error loading password from file: %s - %s", filePath, e.getMessage()));
         }
     }
 
@@ -81,7 +79,7 @@ public class PasswordManager {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.write(json.toString(4));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe(String.format("Error saving password to file: %s - %s", filePath, e.getMessage()));
         }
     }
 
@@ -90,12 +88,12 @@ public class PasswordManager {
      *
      * @param password the password to hash
      * @return the hashed password as a hexadecimal string
-     * @throws RuntimeException if the hashing process fails
+     * @throws PasswordHashingException if the hashing process fails
      */
     public static String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes("UTF-8"));
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             // Convert byte array to hex string.
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
@@ -104,8 +102,17 @@ public class PasswordManager {
                 hexString.append(hex);
             }
             return hexString.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new PasswordHashingException("Failed to hash password: SHA-256 algorithm not available", ex);
+        }
+    }
+
+    /**
+     * Custom exception for password hashing failures.
+     */
+    public static class PasswordHashingException extends RuntimeException {
+        public PasswordHashingException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

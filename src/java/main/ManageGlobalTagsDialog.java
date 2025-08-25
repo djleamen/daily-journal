@@ -1,14 +1,5 @@
-/**
- * The ManageGlobalTagsDialog class provides a user interface for managing
- * global tags in the journal application. Users can view, delete, and manage
- * tags that are applied globally across all journal entries.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.List;
+import javax.swing.*;
 
 /**
  * The {@code ManageGlobalTagsDialog} class provides a dialog for managing global 
@@ -16,10 +7,10 @@ import java.util.List;
  * manage tags that are applied globally across all journal entries.
  */
 public class ManageGlobalTagsDialog extends JDialog {
-    private TagsManager tagsManager;
-    private JournalManager journalManager;
-    private DefaultListModel<String> tagsListModel;
-    private JList<String> tagsList;
+    private final transient TagsManager tagsManager;
+    private final transient JournalManager journalManager;
+    private final DefaultListModel<String> tagsListModel;
+    private final JList<String> tagsList;
 
     /**
      * Constructs a new {@code ManageGlobalTagsDialog}.

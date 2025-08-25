@@ -1,15 +1,8 @@
-/**
- * The JournalGraphPanel class is responsible for rendering a heatmap-style calendar
- * inspired by GitHub's contribution graph. It visualizes journal entries as colored squares
- * for each day of the year. A color gradient is used to indicate the intensity of entries,
- * with lighter colors representing fewer entries and darker colors representing more entries.
- */
-
-import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
 
 /**
  * The {@code JournalGraphPanel} class creates a panel that visualizes journal entries 
@@ -17,10 +10,10 @@ import java.util.Map;
  * indicates the number of entries for that day.
  */
 public class JournalGraphPanel extends JPanel {
-    private JournalManager journalManager;
+    private final transient JournalManager journalManager;
     private Map<LocalDate, Integer> dateEntryCount;
-    private int cellSize = 15;
-    private int cellPadding = 3;
+    private static final int CELL_SIZE = 15;
+    private static final int CELL_PADDING = 3;
 
     /**
      * Constructs a {@code JournalGraphPanel} with the given {@code JournalManager}.
@@ -67,11 +60,11 @@ public class JournalGraphPanel extends JPanel {
             int count = dateEntryCount.getOrDefault(date, 0);
             Color color = getColorForCount(count);
             g2d.setColor(color);
-            int drawX = x * (cellSize + cellPadding);
-            int drawY = y * (cellSize + cellPadding);
-            g2d.fillRect(drawX, drawY, cellSize, cellSize);
+            int drawX = x * (CELL_SIZE + CELL_PADDING);
+            int drawY = y * (CELL_SIZE + CELL_PADDING);
+            g2d.fillRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
             g2d.setColor(Color.LIGHT_GRAY);
-            g2d.drawRect(drawX, drawY, cellSize, cellSize);
+            g2d.drawRect(drawX, drawY, CELL_SIZE, CELL_SIZE);
             date = date.plusDays(1);
             y++;
             if (y > 6) {
@@ -89,14 +82,11 @@ public class JournalGraphPanel extends JPanel {
      * @return the {@code Color} corresponding to the entry count
      */
     private Color getColorForCount(int count) {
-        if (count == 0) {
-            return Color.WHITE;
-        } else if (count == 1) {
-            return new Color(198, 228, 139);
-        } else if (count == 2) {
-            return new Color(123, 201, 111);
-        } else {
-            return new Color(35, 154, 59);
-        }
+        return switch (count) {
+            case 0 -> Color.WHITE;
+            case 1 -> new Color(198, 228, 139);
+            case 2 -> new Color(123, 201, 111);
+            default -> new Color(35, 154, 59);
+        };
     }
 }

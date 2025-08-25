@@ -1,12 +1,6 @@
-/**
- * The PasswordDialog class provides a graphical user interface (GUI) dialog
- * for entering or setting a password. It can be used in two modes: to enter an
- * existing password or to set a new password.
- */
-
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
  * The {@code PasswordDialog} class provides a graphical user interface (GUI) dialog
@@ -23,7 +17,6 @@ public class PasswordDialog extends JDialog {
     private boolean succeeded;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
-    private boolean newPasswordMode;
     private String password;
 
     /**
@@ -35,10 +28,8 @@ public class PasswordDialog extends JDialog {
      */
     public PasswordDialog(Frame parent, boolean newPasswordMode) {
         super(parent, newPasswordMode ? "Set New Password" : "Enter Password", true);
-        this.newPasswordMode = newPasswordMode;
 
         setSize(newPasswordMode ? 300 : 250, newPasswordMode ? 200 : 150);
-        setLocationRelativeTo(parent);
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(new EmptyBorder(10,10,10,10));

@@ -1,15 +1,8 @@
-/**
- * The LocationFilterDialog class is responsible for displaying a dialog
- * that allows users to filter journal entries by location. It provides a dropdown
- * menu populated with unique locations extracted from the provided journal entries.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.List;
+import javax.swing.*;
 
 /**
  * The {@code LocationFilterDialog} class creates a dialog for filtering journal entries 

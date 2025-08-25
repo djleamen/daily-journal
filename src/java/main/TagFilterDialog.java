@@ -1,13 +1,5 @@
-/**
- * The TagFilterDialog class provides a dialog for filtering 
- * items by tags. It displays a combo box populated with available tags 
- * retrieved from the {@code TagsManager} and allows the user to confirm 
- * or cancel their selection.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import javax.swing.*;
 
 /**
  * The {@code TagFilterDialog} class provides a dialog for filtering 
@@ -19,7 +11,6 @@ public class TagFilterDialog extends JDialog {
     private boolean succeeded;
     private JComboBox<String> tagComboBox;
     private String selectedTag;
-    private TagsManager tagsManager;
 
     /**
      * Constructs a {@code TagFilterDialog}.
@@ -29,7 +20,6 @@ public class TagFilterDialog extends JDialog {
      */
     public TagFilterDialog(Frame parent, TagsManager tagsManager) {
         super(parent, "Filter by Tag", true);
-        this.tagsManager = tagsManager;
 
         setSize(300, 150);
         setLocationRelativeTo(parent);

@@ -1,14 +1,8 @@
-/**
- * The {@code FilterDialog} class provides a dialog for filtering journal entries 
- * based on categories such as "Tag" or "Location". Users can select a category 
- * and a corresponding value to apply the filter.
- */
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  * The {@code FilterDialog} class provides a dialog for filtering journal entries 
