@@ -9,8 +9,9 @@ Daily Journal is a Java Swing desktop application for creating and managing dail
 - **Language**: Java 8+
 - **UI Framework**: Java Swing
 - **Data Storage**: JSON files
+- **JSON Handling**: Custom `JSONObject` and `JSONArray` implementations (not external libraries)
 - **External Libraries**: 
-  - `json-20210307.jar` (located in `lib/` directory)
+  - `json-20210307.jar` is present in `lib/` but not currently used
 
 ## Project Structure
 
@@ -90,7 +91,8 @@ The project can be opened in IDEs like VSCode or IntelliJ IDEA. Run `JournalApp.
    - Dispose dialogs properly after use
 
 3. **JSON Handling**:
-   - Use custom `JSONObject` and `JSONArray` classes from the project
+   - Use the project's custom `JSONObject` and `JSONArray` implementations (located in `src/java/main/`)
+   - These are NOT the standard org.json library classes - they are custom, project-specific implementations
    - Validate JSON data before parsing
    - Handle parsing errors gracefully
 
