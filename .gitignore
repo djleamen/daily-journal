@@ -4,3 +4,7 @@ tags.json
 password.json
 
 /bin
+
+# Maven build artifacts
+/target/
+*.class
