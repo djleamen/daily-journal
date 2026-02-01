@@ -62,8 +62,8 @@ public class JSONArray {
      */
     public JSONObject getJSONObject(int index) {
         Object obj = list.get(index);
-        if (obj instanceof JSONObject jsonObject) {
-            return jsonObject;
+        if (obj instanceof JSONObject) {
+            return (JSONObject) obj;
         }
         // If it's a string representation, try to parse it
         if (obj != null) {

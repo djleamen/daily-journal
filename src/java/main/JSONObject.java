@@ -43,8 +43,8 @@ public class JSONObject {
      */
     public JSONArray getJSONArray(String key) {
         Object value = map.get(key);
-        if (value instanceof JSONArray jsonArray) {
-            return jsonArray;
+        if (value instanceof JSONArray) {
+            return (JSONArray) value;
         }
         // If it's a string representation, try to parse it
         if (value != null) {

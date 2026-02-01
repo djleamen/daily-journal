@@ -82,11 +82,21 @@ public class JournalGraphPanel extends JPanel {
      * @return the {@code Color} corresponding to the entry count
      */
     private Color getColorForCount(int count) {
-        return switch (count) {
-            case 0 -> Color.WHITE;
-            case 1 -> new Color(198, 228, 139);
-            case 2 -> new Color(123, 201, 111);
-            default -> new Color(35, 154, 59);
-        };
+        Color color;
+        switch (count) {
+            case 0:
+                color = Color.WHITE;
+                break;
+            case 1:
+                color = new Color(198, 228, 139);
+                break;
+            case 2:
+                color = new Color(123, 201, 111);
+                break;
+            default:
+                color = new Color(35, 154, 59);
+                break;
+        }
+        return color;
     }
 }

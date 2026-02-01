@@ -12,7 +12,8 @@ public class JournalEntryRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        if (value instanceof JournalEntry entry) {
+        if (value instanceof JournalEntry) {
+            JournalEntry entry = (JournalEntry) value;
             value = entry.getDate().format(formatter) + " - " + entry.getTitle();
         }
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

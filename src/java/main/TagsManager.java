@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The {@code TagsManager class is responsible for managing a list of tags.
+ * The {@code TagsManager} class is responsible for managing a list of tags.
  * It provides functionality to add, load, and save tags to a file.
  * Tags are stored in a JSON array format within the specified file.
  * <p>
