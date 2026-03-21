@@ -8,3 +8,4 @@ password.json
 # Maven build artifacts
 /target/
 *.class
+.DS_Store
