@@ -1,18 +1,11 @@
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
 
-@DisabledIf("isHeadless")
 class JournalGraphPanelTest {
-
-    static boolean isHeadless() {
-        return GraphicsEnvironment.isHeadless();
-    }
 
     @Test
     void constructsWithEmptyManager() {
