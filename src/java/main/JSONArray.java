@@ -147,7 +147,7 @@ public class JSONArray {
         for (int j = 0; j < indentFactor; j++) {
             sb.append(" ");
         }
-        sb.append("\"").append(escapeString(list.get(index).toString())).append("\"");
+        sb.append(valueToString(list.get(index)));
         if (index < list.size() - 1) {
             sb.append(",");
         }
@@ -161,10 +161,23 @@ public class JSONArray {
      * @param index the element index
      */
     private void appendCompactElement(StringBuilder sb, int index) {
-        sb.append("\"").append(escapeString(list.get(index).toString())).append("\"");
+        sb.append(valueToString(list.get(index)));
         if (index < list.size() - 1) {
             sb.append(",");
         }
+    }
+
+    /**
+     * Converts a value to its JSON string representation. Nested
+     * {@code JSONObject}, {@code JSONArray}, and {@code List} values are
+     * emitted as JSON structures rather than quoted strings so they can be
+     * parsed back; everything else is quoted and escaped.
+     *
+     * @param value the value to convert
+     * @return the JSON representation of the value
+     */
+    private String valueToString(Object value) {
+        return JsonText.valueToString(value);
     }
 
     /**
@@ -187,20 +200,22 @@ public class JSONArray {
             return;
         }
 
-        // Simple parsing for string arrays
-        String[] elements = content.split(",");
-        for (String element : elements) {
-            String trimmedElement = element.trim();
-            if (trimmedElement.startsWith("\"") && trimmedElement.endsWith("\"")) {
-                // Remove quotes and unescape
-                String value = trimmedElement.substring(1, trimmedElement.length() - 1);
-                value = unescapeString(value);
-                list.add(value);
-            } else {
-                list.add(trimmedElement);
-            }
+        for (String element : JsonText.splitTopLevel(content)) {
+            list.add(parseValue(element.trim()));
         }
     }
+
+    /**
+     * Parses a single JSON value: nested objects and arrays are parsed
+     * recursively, quoted strings are unescaped, anything else is kept as-is.
+     *
+     * @param element the trimmed value text
+     * @return the parsed value
+     */
+    private Object parseValue(String element) {
+        return JsonText.parseValue(element);
+    }
+
 
     /**
      * Escapes special characters in a string for JSON representation.
@@ -209,14 +224,7 @@ public class JSONArray {
      * @return the escaped string
      */
     private String escapeString(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str.replace("\\", "\\\\")
-                  .replace("\"", "\\\"")
-                  .replace("\n", "\\n")
-                  .replace("\r", "\\r")
-                  .replace("\t", "\\t");
+        return JsonText.escapeString(str);
     }
 
     /**
@@ -226,13 +234,6 @@ public class JSONArray {
      * @return the unescaped string
      */
     private String unescapeString(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str.replace("\\\"", "\"")
-                  .replace("\\\\", "\\")
-                  .replace("\\n", "\n")
-                  .replace("\\r", "\r")
-                  .replace("\\t", "\t");
+        return JsonText.unescapeString(str);
     }
 }
