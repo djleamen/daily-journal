@@ -177,16 +177,7 @@ public class JSONArray {
      * @return the JSON representation of the value
      */
     private String valueToString(Object value) {
-        if (value instanceof JSONObject) {
-            return ((JSONObject) value).toString();
-        }
-        if (value instanceof JSONArray) {
-            return ((JSONArray) value).toString();
-        }
-        if (value instanceof List) {
-            return new JSONArray((List<?>) value).toString();
-        }
-        return "\"" + escapeString(value != null ? value.toString() : "") + "\"";
+        return JsonText.valueToString(value);
     }
 
     /**
@@ -209,7 +200,7 @@ public class JSONArray {
             return;
         }
 
-        for (String element : splitTopLevel(content)) {
+        for (String element : JsonText.splitTopLevel(content)) {
             list.add(parseValue(element.trim()));
         }
     }
@@ -222,52 +213,9 @@ public class JSONArray {
      * @return the parsed value
      */
     private Object parseValue(String element) {
-        if (element.startsWith("{")) {
-            return new JSONObject(element);
-        }
-        if (element.startsWith("[")) {
-            return new JSONArray(element);
-        }
-        if (element.length() >= 2 && element.startsWith("\"") && element.endsWith("\"")) {
-            return unescapeString(element.substring(1, element.length() - 1));
-        }
-        return element;
+        return JsonText.parseValue(element);
     }
 
-    /**
-     * Splits JSON content on commas that are not inside nested objects,
-     * arrays, or quoted strings.
-     *
-     * @param content the content between the outer brackets
-     * @return the top-level elements
-     */
-    private List<String> splitTopLevel(String content) {
-        List<String> elements = new ArrayList<>();
-        int depth = 0;
-        boolean inString = false;
-        int start = 0;
-        for (int i = 0; i < content.length(); i++) {
-            char c = content.charAt(i);
-            if (inString) {
-                if (c == '\\') {
-                    i++;
-                } else if (c == '"') {
-                    inString = false;
-                }
-            } else if (c == '"') {
-                inString = true;
-            } else if (c == '{' || c == '[') {
-                depth++;
-            } else if (c == '}' || c == ']') {
-                depth--;
-            } else if (c == ',' && depth == 0) {
-                elements.add(content.substring(start, i));
-                start = i + 1;
-            }
-        }
-        elements.add(content.substring(start));
-        return elements;
-    }
 
     /**
      * Escapes special characters in a string for JSON representation.
@@ -276,14 +224,7 @@ public class JSONArray {
      * @return the escaped string
      */
     private String escapeString(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str.replace("\\", "\\\\")
-                  .replace("\"", "\\\"")
-                  .replace("\n", "\\n")
-                  .replace("\r", "\\r")
-                  .replace("\t", "\\t");
+        return JsonText.escapeString(str);
     }
 
     /**
@@ -293,13 +234,6 @@ public class JSONArray {
      * @return the unescaped string
      */
     private String unescapeString(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str.replace("\\\"", "\"")
-                  .replace("\\\\", "\\")
-                  .replace("\\n", "\n")
-                  .replace("\\r", "\r")
-                  .replace("\\t", "\t");
+        return JsonText.unescapeString(str);
     }
 }

@@ -82,4 +82,57 @@ class JSONObjectTest {
         JSONObject json = new JSONObject();
         assertNull(json.getJSONArray("nope"));
     }
+
+    @Test
+    void nestedObjectValuesRoundTripThroughString() {
+        JSONObject inner = new JSONObject();
+        inner.put("title", "First, day");
+        inner.put("note", "line1\nline2 \"quoted\"");
+        JSONObject outer = new JSONObject();
+        outer.put("entry", inner);
+
+        JSONObject reparsed = new JSONObject(outer.toString());
+        Object entry = JsonText.parseValue(
+                JsonText.valueToString(inner));
+        assertTrue(entry instanceof JSONObject);
+        assertEquals("First, day", ((JSONObject) entry).getString("title"));
+        assertEquals("line1\nline2 \"quoted\"",
+                ((JSONObject) entry).getString("note"));
+        assertNotNull(reparsed.toString());
+    }
+
+    @Test
+    void listValuesSerializeAsJsonArrays() {
+        JSONObject json = new JSONObject();
+        json.put("tags", Arrays.asList("work", "school"));
+        String out = json.toString();
+        assertTrue(out.contains("[\"work\",\"school\"]"), out);
+
+        JSONObject reparsed = new JSONObject(out);
+        JSONArray tags = reparsed.getJSONArray("tags");
+        assertEquals(2, tags.length());
+        assertEquals("work", tags.getString(0));
+        assertEquals("school", tags.getString(1));
+    }
+
+    @Test
+    void commasInsideStringsDoNotSplitPairs() {
+        JSONObject json = new JSONObject();
+        json.put("content", "Hello, world, again");
+        json.put("location", "Oshawa, ON");
+
+        JSONObject reparsed = new JSONObject(json.toString());
+        assertEquals("Hello, world, again", reparsed.getString("content"));
+        assertEquals("Oshawa, ON", reparsed.getString("location"));
+    }
+
+    @Test
+    void indentedOutputRoundTrips() {
+        JSONObject inner = new JSONObject();
+        inner.put("k", "v");
+        JSONObject json = new JSONObject();
+        json.put("obj", inner);
+        JSONObject reparsed = new JSONObject(json.toString(4));
+        assertNotNull(reparsed.toString());
+    }
 }
