@@ -49,6 +49,17 @@ class JSONObjectTest {
     }
 
     @Test
+    void backslashFollowedByEscapeCharRoundTrips() {
+        JSONObject original = new JSONObject();
+        original.put("path", "C:\\temp");
+        original.put("mixed", "a\\nb\\tc\\\"d");
+        String serialized = original.toString();
+        JSONObject parsed = new JSONObject(serialized);
+        assertEquals("C:\\temp", parsed.getString("path"));
+        assertEquals("a\\nb\\tc\\\"d", parsed.getString("mixed"));
+    }
+
+    @Test
     void compactAndIndentedOutputDiffer() {
         JSONObject json = new JSONObject();
         json.put("a", "1");
