@@ -127,7 +127,7 @@ final class JsonText {
                     case 'n':  sb.append('\n'); break;
                     case 'r':  sb.append('\r'); break;
                     case 't':  sb.append('\t'); break;
-                    default:   sb.append(next); break;
+                    default:   sb.append('\\').append(next); break;
                 }
             } else {
                 sb.append(c);

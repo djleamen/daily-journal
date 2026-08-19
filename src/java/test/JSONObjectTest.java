@@ -60,6 +60,15 @@ class JSONObjectTest {
     }
 
     @Test
+    void unknownEscapeSequencePreservesBackslash() {
+        // Raw JSON containing an escape sequence this parser does not recognize
+        // (\z, \p): the backslash must be preserved, not silently dropped.
+        JSONObject parsed = new JSONObject("{\"a\":\"\\zfoo\",\"b\":\"C:\\path\"}");
+        assertEquals("\\zfoo", parsed.getString("a"));
+        assertEquals("C:\\path", parsed.getString("b"));
+    }
+
+    @Test
     void compactAndIndentedOutputDiffer() {
         JSONObject json = new JSONObject();
         json.put("a", "1");
