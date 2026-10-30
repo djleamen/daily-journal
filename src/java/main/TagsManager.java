@@ -17,6 +17,7 @@ public class TagsManager {
     private static final Logger logger = Logger.getLogger(TagsManager.class.getName());
     private final List<String> tags;
     private final String filePath;
+    private boolean savingDisabled;
 
     /**
      * Constructs a {@code TagsManager} with the specified file path.
@@ -53,24 +54,44 @@ public class TagsManager {
      * Loads tags from the file into the list. If the file does not exist, the list remains empty.
      * <p>
      * This method clears the current list of tags before loading new ones from the file.
+     * An unreadable file is renamed to {@code <name>.corrupt-<millis>} so the next save
+     * can't overwrite it.
+     *
+     * @return the path the unreadable file was moved to, or {@code null} if the
+     *         load succeeded (or there was nothing to load)
      */
-    public void loadTags() {
+    public java.nio.file.Path loadTags() {
         tags.clear();
-        File file = new File(filePath);
-        if (!file.exists()) return;
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder jsonStr = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonStr.append(line);
-            }
-            JSONArray jsonArr = new JSONArray(jsonStr.toString());
+        if (!new File(filePath).exists()) return null;
+        try {
+            JSONArray jsonArr = JsonFiles.readArray(filePath);
+            List<String> loaded = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
-                tags.add(jsonArr.getString(i));
+                loaded.add(jsonArr.getString(i));
             }
+            tags.addAll(loaded);
+            return null;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage());
+            java.nio.file.Path kept;
+            try {
+                kept = JsonFiles.quarantine(filePath);
+            } catch (IOException moveFailed) {
+                savingDisabled = true; // never write over a file we couldn't set aside
+                kept = java.nio.file.Paths.get(filePath);
+            }
+            java.nio.file.Path keptAs = kept;
+            logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage()
+                    + " (kept as " + keptAs + ")");
+            return kept;
         }
+    }
+
+    /**
+     * @return true if an unreadable tags file could not be moved aside, in which
+     *         case saves are refused so the original is never overwritten
+     */
+    public boolean isSavingDisabled() {
+        return savingDisabled;
     }
 
     /**
@@ -79,9 +100,13 @@ public class TagsManager {
      * If an error occurs during the save operation, the exception is logged.
      */
     public void saveTags() {
+        if (savingDisabled) {
+            logger.log(Level.SEVERE, () -> "Not saving over unreadable tags file " + filePath);
+            return;
+        }
         JSONArray jsonArr = new JSONArray(tags);
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.write(jsonArr.toString(4));
+        try {
+            JsonFiles.writeAtomically(filePath, jsonArr.toString(4));
         } catch (Exception e) {
             logger.log(Level.SEVERE, () -> "Error saving tags to file: " + filePath + " - " + e.getMessage());
         }
