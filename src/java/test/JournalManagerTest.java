@@ -67,4 +67,33 @@ class JournalManagerTest {
 
         assertTrue(mgr.getEntries().isEmpty());
     }
+
+    @Test
+    void corruptFileIsKeptAndNotOverwrittenBySave(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        String original = "[{\"title\": \"Precious\", \"date\": \"not-a-date\"}]";
+        Files.write(file.toPath(), original.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        Path backup = mgr.loadEntries();
+        assertNotNull(backup, "unreadable journal is moved aside");
+        assertTrue(mgr.getEntries().isEmpty());
+
+        mgr.saveEntries();
+        assertEquals(original, new String(Files.readAllBytes(backup), java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void roundTripPreservesNonAsciiText(@TempDir Path tempDir) {
+        File file = tempDir.resolve("entries.json").toFile();
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        mgr.addEntry(new JournalEntry("Café ☕", LocalDate.of(2024, 1, 1),
+                "Montréal", Arrays.asList("joie"), "Ça va très bien 🙂"));
+        mgr.saveEntries();
+
+        JournalManager reloaded = new JournalManager(file.getAbsolutePath());
+        assertNull(reloaded.loadEntries());
+        assertEquals("Café ☕", reloaded.getEntries().get(0).getTitle());
+        assertEquals("Ça va très bien 🙂", reloaded.getEntries().get(0).getContent());
+    }
 }

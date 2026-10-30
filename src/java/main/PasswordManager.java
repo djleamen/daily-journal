@@ -63,13 +63,8 @@ public class PasswordManager {
         if (!file.exists()) {
             return;
         }
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder jsonStr = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonStr.append(line);
-            }
-            JSONObject json = new JSONObject(jsonStr.toString());
+        try {
+            JSONObject json = new JSONObject(JsonFiles.read(filePath));
             String encodedHash = json.getString("hash");
             if (encodedHash != null) {
                 this.salt = Base64.getDecoder().decode(json.getString("salt"));
@@ -140,8 +135,8 @@ public class PasswordManager {
         json.put("salt", Base64.getEncoder().encodeToString(newSalt));
         json.put("iterations", ITERATIONS);
         json.put("hash", Base64.getEncoder().encodeToString(newHash));
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.write(json.toString(4));
+        try {
+            JsonFiles.writeAtomically(filePath, json.toString(4));
         } catch (Exception e) {
             logger.severe(String.format("Error saving password to file: %s - %s", filePath, e.getMessage()));
         }

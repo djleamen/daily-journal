@@ -11,7 +11,7 @@ Daily Journal is a Java Swing desktop application for creating and managing dail
 - **Data Storage**: JSON files
 - **JSON Handling**: Custom `JSONObject` and `JSONArray` implementations (not external libraries)
 - **External Libraries**: 
-  - `json-20210307.jar` is present in `lib/` directory but not currently used (the project uses custom JSON implementations instead)
+  - No external JSON library: the project uses its own small `JSONObject`/`JSONArray` implementations
 
 ## Project Structure
 
@@ -24,7 +24,6 @@ daily-journal/
 │   ├── PasswordManager.java # Handles password hashing/verification
 │   ├── *Dialog.java         # Various dialog windows
 │   └── *Panel.java          # UI panel components
-├── lib/                     # External JAR dependencies
 ├── bin/                     # Compiled .class files (gitignored)
 └── run.sh                   # Build and run script
 ```
@@ -39,10 +38,10 @@ daily-journal/
 Or manually:
 ```bash
 # Compile
-javac -cp .:lib/json-20210307.jar -d bin src/java/main/*.java
+javac -d bin src/java/main/*.java
 
 # Run
-java -cp .:lib/json-20210307.jar:bin JournalApp
+java -cp bin JournalApp
 ```
 
 ### IDE Setup

@@ -42,8 +42,8 @@ Use `./run.sh`.
 
 Alternatively, run:
 
-1. `javac -cp .:lib/json-20210307.jar -d bin src/java/main/*.java`
+1. `javac -d bin src/java/main/*.java`
 
-2. `java -cp .:lib/json-20210307.jar:bin JournalApp`
+2. `java -cp bin JournalApp`
 
 If using an IDE such as VSCode, you can also run `JournalApp.java` directly.

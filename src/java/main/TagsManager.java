@@ -56,20 +56,18 @@ public class TagsManager {
      */
     public void loadTags() {
         tags.clear();
-        File file = new File(filePath);
-        if (!file.exists()) return;
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder jsonStr = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonStr.append(line);
-            }
-            JSONArray jsonArr = new JSONArray(jsonStr.toString());
+        if (!new File(filePath).exists()) return;
+        try {
+            JSONArray jsonArr = new JSONArray(JsonFiles.read(filePath));
+            List<String> loaded = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
-                tags.add(jsonArr.getString(i));
+                loaded.add(jsonArr.getString(i));
             }
+            tags.addAll(loaded);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage());
+            java.nio.file.Path backup = JsonFiles.quarantine(filePath);
+            logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage()
+                    + " (kept as " + backup + ")");
         }
     }
 
@@ -80,8 +78,8 @@ public class TagsManager {
      */
     public void saveTags() {
         JSONArray jsonArr = new JSONArray(tags);
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.write(jsonArr.toString(4));
+        try {
+            JsonFiles.writeAtomically(filePath, jsonArr.toString(4));
         } catch (Exception e) {
             logger.log(Level.SEVERE, () -> "Error saving tags to file: " + filePath + " - " + e.getMessage());
         }

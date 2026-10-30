@@ -26,7 +26,13 @@ public class JournalApp extends JFrame {
      */
     private void initializeManagers() {
         journalManager = new JournalManager("journal_entries.json");
-        journalManager.loadEntries();
+        java.nio.file.Path unreadable = journalManager.loadEntries();
+        if (unreadable != null) {
+            JOptionPane.showMessageDialog(null,
+                    "Your journal file could not be read, so a new journal was started.\n"
+                            + "Nothing was deleted: the original was kept as\n" + unreadable.toAbsolutePath(),
+                    "Journal could not be loaded", JOptionPane.WARNING_MESSAGE);
+        }
 
         tagsManager = new TagsManager("tags.json");
         tagsManager.loadTags();

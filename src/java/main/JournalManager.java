@@ -41,44 +41,47 @@ public class JournalManager {
     }
 
     /**
-     * Loads journal entries from the file specified by the file path.
-     * Clears the current entries before loading.
-     * If the file does not exist, no action is taken.
+     * Loads journal entries from the file specified by the file path,
+     * replacing the current entries. If the file does not exist no action is
+     * taken. Entries are only replaced once the whole file parsed; a file that
+     * can't be parsed is renamed to {@code *.corrupt-<millis>} so the next
+     * save can't overwrite the user's journal with an empty list.
+     *
+     * @return the path the unreadable file was moved to, or {@code null} if
+     *         the load succeeded (or there was nothing to load)
      */
-    public void loadEntries() {
+    public java.nio.file.Path loadEntries() {
         entries.clear();
-        File file = new File(filePath);
-        if (!file.exists()) {
-            return;
+        if (!new File(filePath).exists()) {
+            return null;
         }
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            StringBuilder jsonStr = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonStr.append(line);
-            }
-            JSONArray jsonArr = new JSONArray(jsonStr.toString());
+        try {
+            JSONArray jsonArr = new JSONArray(JsonFiles.read(filePath));
+            List<JournalEntry> loaded = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
-                JSONObject obj = jsonArr.getJSONObject(i);
-                JournalEntry entry = JournalEntry.fromJson(obj);
-                entries.add(entry);
+                loaded.add(JournalEntry.fromJson(jsonArr.getJSONObject(i)));
             }
+            entries.addAll(loaded);
+            return null;
         } catch (Exception e) {
-            logger.severe(String.format("Error loading journal entries from file: %s - %s", filePath, e.getMessage()));
+            java.nio.file.Path backup = JsonFiles.quarantine(filePath);
+            logger.severe(String.format("Error loading journal entries from file: %s - %s (kept as %s)",
+                    filePath, e.getMessage(), backup));
+            return backup;
         }
     }
 
     /**
      * Saves the current journal entries to the file specified by the file path.
-     * Entries are saved in JSON format.
+     * Entries are saved in JSON format, atomically.
      */
     public void saveEntries() {
         JSONArray jsonArr = new JSONArray();
         for (JournalEntry entry : entries) {
             jsonArr.put(entry.toJson());
         }
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.write(jsonArr.toString(4));
+        try {
+            JsonFiles.writeAtomically(filePath, jsonArr.toString(4));
         } catch (Exception e) {
             logger.severe(String.format("Error saving journal entries to file: %s - %s", filePath, e.getMessage()));
         }

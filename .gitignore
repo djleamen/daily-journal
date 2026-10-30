@@ -9,3 +9,7 @@ password.json
 /target/
 *.class
 .DS_Store
+
+# Atomic-write temp files and set-aside unreadable data files
+*.json.tmp
+*.json.corrupt-*
