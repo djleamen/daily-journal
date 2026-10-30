@@ -186,27 +186,45 @@ final class JsonText {
             if (i < s.length() && s.charAt(i) == '-') {
                 i++;
             }
-            while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
-                i++;
+            // Integer part: a single 0, or a non-zero digit followed by digits
+            // (no leading zeros). At least one digit is required.
+            if (i >= s.length() || !isDigit(s.charAt(i))) {
+                throw new IllegalArgumentException("Invalid number at offset " + start);
             }
-            if (i < s.length() && s.charAt(i) == '.') {
+            if (s.charAt(i) == '0') {
                 i++;
-                while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+            } else {
+                while (i < s.length() && isDigit(s.charAt(i))) {
                     i++;
                 }
             }
+            // Fraction: '.' must be followed by at least one digit.
+            if (i < s.length() && s.charAt(i) == '.') {
+                i++;
+                if (i >= s.length() || !isDigit(s.charAt(i))) {
+                    throw new IllegalArgumentException("Invalid number (fraction) at offset " + start);
+                }
+                while (i < s.length() && isDigit(s.charAt(i))) {
+                    i++;
+                }
+            }
+            // Exponent: optional sign, then at least one digit.
             if (i < s.length() && (s.charAt(i) == 'e' || s.charAt(i) == 'E')) {
                 i++;
                 if (i < s.length() && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
                     i++;
                 }
-                while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                if (i >= s.length() || !isDigit(s.charAt(i))) {
+                    throw new IllegalArgumentException("Invalid number (exponent) at offset " + start);
+                }
+                while (i < s.length() && isDigit(s.charAt(i))) {
                     i++;
                 }
             }
-            if (i == start || (i == start + 1 && s.charAt(start) == '-')) {
-                throw new IllegalArgumentException("Invalid number at offset " + start);
-            }
+        }
+
+        private static boolean isDigit(char c) {
+            return c >= '0' && c <= '9';
         }
     }
 

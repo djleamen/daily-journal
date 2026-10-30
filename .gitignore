@@ -10,6 +10,8 @@ password.json
 *.class
 .DS_Store
 
-# Atomic-write temp files and set-aside unreadable data files
+# Atomic-write temp files and set-aside unreadable data files.
+# createTempFile names them "<file>.json.<random>.tmp", so match that too.
 *.json.tmp
+*.json.*.tmp
 *.json.corrupt-*

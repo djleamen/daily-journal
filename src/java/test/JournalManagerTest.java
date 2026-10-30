@@ -158,6 +158,22 @@ class JournalManagerTest {
     }
 
     @Test
+    void malformedNumberIsKeptNotLoaded(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        // Bracketed but malformed: 1e+ is not a valid JSON number.
+        String original = "[{\"date\": \"2024-01-01\", \"content\": 1e+}]";
+        Files.write(file.toPath(), original.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        Path backup = mgr.loadEntries();
+        assertNotNull(backup, "a malformed number must not load as partial data");
+        assertTrue(mgr.getEntries().isEmpty());
+
+        mgr.saveEntries();
+        assertEquals(original, new String(Files.readAllBytes(backup), java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    @Test
     void wellFormedJournalStillLoads(@TempDir Path tempDir) throws Exception {
         File file = tempDir.resolve("entries.json").toFile();
         String original = "[{\"title\": \"A\", \"date\": \"2024-01-01\", \"location\": \"L\", "
