@@ -41,20 +41,41 @@ final class JsonFiles {
             if (legacy.equals(StandardCharsets.UTF_8)) {
                 throw new IOException("File is not valid UTF-8", e);
             }
-            return new String(bytes, legacy);
+            // Decode the legacy charset with reporting too: a raw byte that is
+            // invalid in both UTF-8 and the platform charset (e.g. 0x81 under
+            // windows-1252) must reach the caller's preservation path, not be
+            // silently turned into U+FFFD and then overwritten on the next save.
+            try {
+                return legacy.newDecoder()
+                        .onMalformedInput(CodingErrorAction.REPORT)
+                        .onUnmappableCharacter(CodingErrorAction.REPORT)
+                        .decode(ByteBuffer.wrap(bytes))
+                        .toString();
+            } catch (CharacterCodingException legacyFailed) {
+                throw new IOException("File is not valid UTF-8 or " + legacy, legacyFailed);
+            }
         }
     }
 
     /**
-     * Reads a file that must hold one complete JSON array. The hand-rolled
-     * {@link JSONArray} parser returns an empty array for malformed input, so
-     * a truncated file (e.g. {@code [{"title": ...}) is rejected here instead
-     * of loading as "no entries" and being overwritten by the next save.
+     * Reads a file that must hold one complete, well-formed JSON array. The
+     * hand-rolled {@link JSONArray} parser is lenient (it returns an empty
+     * array for malformed input and silently drops members with a missing
+     * colon or merges objects with a missing comma), so the text is first
+     * validated strictly by {@link JsonText#validate}. A truncated or
+     * otherwise corrupt file is rejected here instead of loading as partial
+     * data and being overwritten by the next save.
      */
     static JSONArray readArray(String filePath) throws IOException {
         String text = read(filePath).trim();
-        if (!text.startsWith("[") || !text.endsWith("]")) {
-            throw new IOException("Not a complete JSON array (truncated or corrupt)");
+        if (!text.startsWith("[")) {
+            throw new IOException("Not a JSON array (truncated or corrupt)");
+        }
+        try {
+            JsonText.validate(text);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Not a complete, well-formed JSON array (truncated or corrupt): "
+                    + e.getMessage(), e);
         }
         return new JSONArray(text);
     }

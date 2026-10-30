@@ -124,4 +124,49 @@ class JournalManagerTest {
 
         assertEquals(1, Files.list(tempDir).filter(p -> p.getFileName().toString().startsWith("tags.json.corrupt-")).count());
     }
+
+    @Test
+    void malformedEntryMissingColonIsKeptNotLoaded(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        // Bracketed but malformed: the "content" member has no colon.
+        String original = "[{\"date\": \"2024-01-01\", \"content\" \"Precious\"}]";
+        Files.write(file.toPath(), original.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        Path backup = mgr.loadEntries();
+        assertNotNull(backup, "a member with a missing colon must not load as partial data");
+        assertTrue(mgr.getEntries().isEmpty());
+
+        mgr.saveEntries();
+        assertEquals(original, new String(Files.readAllBytes(backup), java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void malformedEntriesMissingCommaAreKeptNotLoaded(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        // Two objects with no separating comma.
+        String original = "[{\"title\": \"A\"}{\"title\": \"B\"}]";
+        Files.write(file.toPath(), original.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        Path backup = mgr.loadEntries();
+        assertNotNull(backup, "objects with a missing comma must not load as partial data");
+        assertTrue(mgr.getEntries().isEmpty());
+
+        mgr.saveEntries();
+        assertEquals(original, new String(Files.readAllBytes(backup), java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void wellFormedJournalStillLoads(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        String original = "[{\"title\": \"A\", \"date\": \"2024-01-01\", \"location\": \"L\", "
+                + "\"tags\": [\"t\"], \"content\": \"c\"}]";
+        Files.write(file.toPath(), original.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        assertNull(mgr.loadEntries(), "a well-formed journal must load without being quarantined");
+        assertEquals(1, mgr.getEntries().size());
+        assertEquals("A", mgr.getEntries().get(0).getTitle());
+    }
 }

@@ -26,19 +26,38 @@ public class JournalApp extends JFrame {
      */
     private void initializeManagers() {
         journalManager = new JournalManager("journal_entries.json");
-        java.nio.file.Path unreadable = journalManager.loadEntries();
-        if (unreadable != null) {
-            JOptionPane.showMessageDialog(null,
-                    "Your journal file could not be read, so a new journal was started.\n"
-                            + "Nothing was deleted: the original was kept as\n" + unreadable.toAbsolutePath()
-                            + (journalManager.isSavingDisabled()
-                                    ? "\n\nIt could not be moved aside, so saving is paused until you move it."
-                                    : ""),
-                    "Journal could not be loaded", JOptionPane.WARNING_MESSAGE);
+        java.nio.file.Path unreadableJournal = journalManager.loadEntries();
+        if (unreadableJournal != null) {
+            showRecoveryWarning("journal", unreadableJournal, journalManager.isSavingDisabled());
         }
 
         tagsManager = new TagsManager("tags.json");
-        tagsManager.loadTags();
+        java.nio.file.Path unreadableTags = tagsManager.loadTags();
+        if (unreadableTags != null) {
+            showRecoveryWarning("tags", unreadableTags, tagsManager.isSavingDisabled());
+        }
+    }
+
+    /**
+     * Tells the user that a data file could not be read, where the original was
+     * kept, and — when it could not be moved aside — that saving is paused for
+     * this session and they must move the file and restart before editing.
+     *
+     * @param what            the kind of file ("journal" or "tags")
+     * @param kept            the path the original was preserved at
+     * @param savingDisabled  whether the file could not be moved aside
+     */
+    private void showRecoveryWarning(String what, java.nio.file.Path kept, boolean savingDisabled) {
+        JOptionPane.showMessageDialog(null,
+                "Your " + what + " file could not be read, so a new " + what + " was started.\n"
+                        + "Nothing was deleted: the original was kept as\n" + kept.toAbsolutePath()
+                        + (savingDisabled
+                                ? "\n\nIt could not be moved aside, so saving is paused for this session.\n"
+                                        + "Move the file, then restart the app before adding entries, or they\n"
+                                        + "will be lost when you quit."
+                                : ""),
+                what.substring(0, 1).toUpperCase() + what.substring(1) + " could not be loaded",
+                JOptionPane.WARNING_MESSAGE);
     }
 
     /**

@@ -13,6 +13,204 @@ final class JsonText {
     }
 
     /**
+     * Strictly validates that {@code text} is a single, complete, well-formed
+     * JSON document. The lenient {@link JSONObject}/{@link JSONArray} parsers
+     * silently drop a member with a missing colon and merge objects with a
+     * missing comma, so malformed input would otherwise load as partial data
+     * and be overwritten on the next save. This rejects such input so the
+     * caller can preserve the original instead.
+     * <p>
+     * It is deliberately lenient <em>inside</em> strings — raw control
+     * characters and unrecognised escapes are accepted — so a journal written
+     * by this app's own serializer is never falsely rejected; structure
+     * (colons, commas, brackets, string termination, literals, numbers) is
+     * validated strictly.
+     *
+     * @param text the trimmed JSON text
+     * @throws IllegalArgumentException if the text is not well-formed JSON
+     */
+    static void validate(String text) {
+        Validator v = new Validator(text);
+        v.skipWhitespace();
+        v.value();
+        v.skipWhitespace();
+        if (!v.atEnd()) {
+            throw new IllegalArgumentException("Unexpected trailing content at offset " + v.pos());
+        }
+    }
+
+    /**
+     * Recursive-descent JSON structure validator. See {@link #validate(String)}.
+     */
+    private static final class Validator {
+        private final String s;
+        private int i;
+
+        Validator(String s) {
+            this.s = s;
+        }
+
+        int pos() {
+            return i;
+        }
+
+        boolean atEnd() {
+            return i >= s.length();
+        }
+
+        void skipWhitespace() {
+            while (i < s.length()) {
+                char c = s.charAt(i);
+                if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+                    i++;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        private char peek() {
+            if (i >= s.length()) {
+                throw new IllegalArgumentException("Unexpected end of JSON");
+            }
+            return s.charAt(i);
+        }
+
+        private void expect(char c) {
+            if (i >= s.length() || s.charAt(i) != c) {
+                throw new IllegalArgumentException("Expected '" + c + "' at offset " + i);
+            }
+            i++;
+        }
+
+        void value() {
+            skipWhitespace();
+            char c = peek();
+            switch (c) {
+                case '{': object(); break;
+                case '[': array(); break;
+                case '"': string(); break;
+                case 't': literal("true"); break;
+                case 'f': literal("false"); break;
+                case 'n': literal("null"); break;
+                default:
+                    if (c == '-' || (c >= '0' && c <= '9')) {
+                        number();
+                    } else {
+                        throw new IllegalArgumentException("Unexpected character '" + c + "' at offset " + i);
+                    }
+            }
+        }
+
+        private void object() {
+            expect('{');
+            skipWhitespace();
+            if (peek() == '}') {
+                i++;
+                return;
+            }
+            while (true) {
+                skipWhitespace();
+                if (peek() != '"') {
+                    throw new IllegalArgumentException("Expected string key at offset " + i);
+                }
+                string();
+                skipWhitespace();
+                expect(':');
+                value();
+                skipWhitespace();
+                char c = peek();
+                if (c == ',') {
+                    i++;
+                } else if (c == '}') {
+                    i++;
+                    return;
+                } else {
+                    throw new IllegalArgumentException("Expected ',' or '}' at offset " + i);
+                }
+            }
+        }
+
+        private void array() {
+            expect('[');
+            skipWhitespace();
+            if (peek() == ']') {
+                i++;
+                return;
+            }
+            while (true) {
+                value();
+                skipWhitespace();
+                char c = peek();
+                if (c == ',') {
+                    i++;
+                } else if (c == ']') {
+                    i++;
+                    return;
+                } else {
+                    throw new IllegalArgumentException("Expected ',' or ']' at offset " + i);
+                }
+            }
+        }
+
+        private void string() {
+            expect('"');
+            while (true) {
+                if (i >= s.length()) {
+                    throw new IllegalArgumentException("Unterminated string");
+                }
+                char c = s.charAt(i++);
+                if (c == '"') {
+                    return;
+                }
+                if (c == '\\') {
+                    if (i >= s.length()) {
+                        throw new IllegalArgumentException("Unterminated escape in string");
+                    }
+                    // Accept any escaped character (lenient, matching unescapeString).
+                    i++;
+                }
+                // Raw control characters are accepted on purpose (lenient).
+            }
+        }
+
+        private void literal(String lit) {
+            if (!s.startsWith(lit, i)) {
+                throw new IllegalArgumentException("Invalid literal at offset " + i);
+            }
+            i += lit.length();
+        }
+
+        private void number() {
+            int start = i;
+            if (i < s.length() && s.charAt(i) == '-') {
+                i++;
+            }
+            while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                i++;
+            }
+            if (i < s.length() && s.charAt(i) == '.') {
+                i++;
+                while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                    i++;
+                }
+            }
+            if (i < s.length() && (s.charAt(i) == 'e' || s.charAt(i) == 'E')) {
+                i++;
+                if (i < s.length() && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+                    i++;
+                }
+                while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                    i++;
+                }
+            }
+            if (i == start || (i == start + 1 && s.charAt(start) == '-')) {
+                throw new IllegalArgumentException("Invalid number at offset " + start);
+            }
+        }
+    }
+
+    /**
      * Splits JSON content on commas that are not inside nested objects,
      * arrays, or quoted strings.
      *

@@ -54,10 +54,15 @@ public class TagsManager {
      * Loads tags from the file into the list. If the file does not exist, the list remains empty.
      * <p>
      * This method clears the current list of tags before loading new ones from the file.
+     * An unreadable file is renamed to {@code <name>.corrupt-<millis>} so the next save
+     * can't overwrite it.
+     *
+     * @return the path the unreadable file was moved to, or {@code null} if the
+     *         load succeeded (or there was nothing to load)
      */
-    public void loadTags() {
+    public java.nio.file.Path loadTags() {
         tags.clear();
-        if (!new File(filePath).exists()) return;
+        if (!new File(filePath).exists()) return null;
         try {
             JSONArray jsonArr = JsonFiles.readArray(filePath);
             List<String> loaded = new ArrayList<>();
@@ -65,18 +70,28 @@ public class TagsManager {
                 loaded.add(jsonArr.getString(i));
             }
             tags.addAll(loaded);
+            return null;
         } catch (Exception e) {
-            String kept;
+            java.nio.file.Path kept;
             try {
-                kept = JsonFiles.quarantine(filePath).toString();
+                kept = JsonFiles.quarantine(filePath);
             } catch (IOException moveFailed) {
                 savingDisabled = true; // never write over a file we couldn't set aside
-                kept = filePath;
+                kept = java.nio.file.Paths.get(filePath);
             }
-            String keptAs = kept;
+            java.nio.file.Path keptAs = kept;
             logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage()
                     + " (kept as " + keptAs + ")");
+            return kept;
         }
+    }
+
+    /**
+     * @return true if an unreadable tags file could not be moved aside, in which
+     *         case saves are refused so the original is never overwritten
+     */
+    public boolean isSavingDisabled() {
+        return savingDisabled;
     }
 
     /**
