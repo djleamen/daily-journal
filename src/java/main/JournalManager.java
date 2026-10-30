@@ -11,6 +11,7 @@ public class JournalManager {
     private static final Logger logger = Logger.getLogger(JournalManager.class.getName());
     private final List<JournalEntry> entries;
     private final String filePath;
+    private boolean savingDisabled;
 
     /**
      * Constructs a {@code JournalManager} with the specified file path.
@@ -56,7 +57,7 @@ public class JournalManager {
             return null;
         }
         try {
-            JSONArray jsonArr = new JSONArray(JsonFiles.read(filePath));
+            JSONArray jsonArr = JsonFiles.readArray(filePath);
             List<JournalEntry> loaded = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
                 loaded.add(JournalEntry.fromJson(jsonArr.getJSONObject(i)));
@@ -64,11 +65,26 @@ public class JournalManager {
             entries.addAll(loaded);
             return null;
         } catch (Exception e) {
-            java.nio.file.Path backup = JsonFiles.quarantine(filePath);
+            java.nio.file.Path kept;
+            try {
+                kept = JsonFiles.quarantine(filePath);
+            } catch (IOException moveFailed) {
+                // Couldn't set it aside, so never write over it this session.
+                savingDisabled = true;
+                kept = java.nio.file.Paths.get(filePath);
+            }
             logger.severe(String.format("Error loading journal entries from file: %s - %s (kept as %s)",
-                    filePath, e.getMessage(), backup));
-            return backup;
+                    filePath, e.getMessage(), kept));
+            return kept;
         }
+    }
+
+    /**
+     * @return true if an unreadable journal could not be moved aside, in which
+     *         case saves are refused so the original is never overwritten
+     */
+    public boolean isSavingDisabled() {
+        return savingDisabled;
     }
 
     /**
@@ -76,6 +92,10 @@ public class JournalManager {
      * Entries are saved in JSON format, atomically.
      */
     public void saveEntries() {
+        if (savingDisabled) {
+            logger.severe(String.format("Not saving over unreadable journal %s", filePath));
+            return;
+        }
         JSONArray jsonArr = new JSONArray();
         for (JournalEntry entry : entries) {
             jsonArr.put(entry.toJson());

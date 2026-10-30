@@ -96,4 +96,32 @@ class JournalManagerTest {
         assertEquals("Café ☕", reloaded.getEntries().get(0).getTitle());
         assertEquals("Ça va très bien 🙂", reloaded.getEntries().get(0).getContent());
     }
+
+    @Test
+    void truncatedJournalIsKeptNotLoadedAsEmpty(@TempDir Path tempDir) throws Exception {
+        File file = tempDir.resolve("entries.json").toFile();
+        JournalManager writer = new JournalManager(file.getAbsolutePath());
+        writer.addEntry(new JournalEntry("Keep me", LocalDate.of(2024, 1, 1), "L", Arrays.asList("t"), "c"));
+        writer.saveEntries();
+        byte[] full = Files.readAllBytes(file.toPath());
+        byte[] truncated = Arrays.copyOf(full, full.length / 2);
+        Files.write(file.toPath(), truncated);
+
+        JournalManager mgr = new JournalManager(file.getAbsolutePath());
+        Path backup = mgr.loadEntries();
+        assertNotNull(backup, "a truncated file must not load as an empty journal");
+        assertArrayEquals(truncated, Files.readAllBytes(backup));
+    }
+
+    @Test
+    void truncatedTagsFileIsKept(@TempDir Path tempDir) throws Exception {
+        Path file = tempDir.resolve("tags.json");
+        Files.write(file, "[\"work\", \"tra".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        TagsManager tags = new TagsManager(file.toString());
+        tags.loadTags();
+        tags.saveTags();
+
+        assertEquals(1, Files.list(tempDir).filter(p -> p.getFileName().toString().startsWith("tags.json.corrupt-")).count());
+    }
 }

@@ -30,7 +30,10 @@ public class JournalApp extends JFrame {
         if (unreadable != null) {
             JOptionPane.showMessageDialog(null,
                     "Your journal file could not be read, so a new journal was started.\n"
-                            + "Nothing was deleted: the original was kept as\n" + unreadable.toAbsolutePath(),
+                            + "Nothing was deleted: the original was kept as\n" + unreadable.toAbsolutePath()
+                            + (journalManager.isSavingDisabled()
+                                    ? "\n\nIt could not be moved aside, so saving is paused until you move it."
+                                    : ""),
                     "Journal could not be loaded", JOptionPane.WARNING_MESSAGE);
         }
 

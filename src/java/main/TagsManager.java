@@ -17,6 +17,7 @@ public class TagsManager {
     private static final Logger logger = Logger.getLogger(TagsManager.class.getName());
     private final List<String> tags;
     private final String filePath;
+    private boolean savingDisabled;
 
     /**
      * Constructs a {@code TagsManager} with the specified file path.
@@ -58,16 +59,23 @@ public class TagsManager {
         tags.clear();
         if (!new File(filePath).exists()) return;
         try {
-            JSONArray jsonArr = new JSONArray(JsonFiles.read(filePath));
+            JSONArray jsonArr = JsonFiles.readArray(filePath);
             List<String> loaded = new ArrayList<>();
             for (int i = 0; i < jsonArr.length(); i++) {
                 loaded.add(jsonArr.getString(i));
             }
             tags.addAll(loaded);
         } catch (Exception e) {
-            java.nio.file.Path backup = JsonFiles.quarantine(filePath);
+            String kept;
+            try {
+                kept = JsonFiles.quarantine(filePath).toString();
+            } catch (IOException moveFailed) {
+                savingDisabled = true; // never write over a file we couldn't set aside
+                kept = filePath;
+            }
+            String keptAs = kept;
             logger.log(Level.SEVERE, () -> "Error loading tags from file: " + filePath + " - " + e.getMessage()
-                    + " (kept as " + backup + ")");
+                    + " (kept as " + keptAs + ")");
         }
     }
 
@@ -77,6 +85,10 @@ public class TagsManager {
      * If an error occurs during the save operation, the exception is logged.
      */
     public void saveTags() {
+        if (savingDisabled) {
+            logger.log(Level.SEVERE, () -> "Not saving over unreadable tags file " + filePath);
+            return;
+        }
         JSONArray jsonArr = new JSONArray(tags);
         try {
             JsonFiles.writeAtomically(filePath, jsonArr.toString(4));
